@@ -7,6 +7,34 @@ export async function POST(req: NextRequest) {
   try {
     const { url, plainText } = await req.json()
     
+    // テスト用: OpenAI APIキーがない場合はモックレスポンスを返す
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your_openai_api_key_here') {
+      console.log('Using mock response (no valid API key)')
+      const mockResponse = {
+        corporateName: "株式会社サンプル",
+        foundingYear: "2010年",
+        industry: "IT・ソフトウェア開発",
+        description: "Webアプリケーション開発とシステムコンサルティングを主力事業とする。特にNext.jsを使用したモダンなWebアプリケーション開発に強みを持つ。",
+        employeeScale: "50-99" as const,
+        headOffice: "東京都渋谷区",
+        offices: [
+          { id: 1, address: "東京都渋谷区渋谷1-1-1" },
+          { id: 2, address: "大阪府大阪市北区梅田2-2-2" }
+        ],
+        revenue: "5億円",
+        capital: "1000万円",
+        contactMail: "info@sample.com",
+        challenges: "AI技術を活用したサービス開発と海外展開",
+        notes: "ISO27001認証取得済み、東京都ベンチャー企業認定",
+        rawOutput: "Mock response for development"
+      }
+      
+      const response = NextResponse.json(mockResponse)
+      response.headers.set('X-Extraction-Time', new Date().toISOString())
+      response.headers.set('X-Mock-Response', 'true')
+      return response
+    }
+    
     let contentToProcess = plainText
     
     // URLが提供された場合はWebスクレイピングを実行
